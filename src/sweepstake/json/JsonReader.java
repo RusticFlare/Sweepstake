@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,6 +55,30 @@ public class JsonReader {
 		} finally {
 			is.close();
 		}
+	}
+	
+	public static JSONObject getJSONObjectFromJSONArrayFromInput(JSONArray a) throws JSONException {
+		JSONObject o = null;
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			String input;
+			while((input=br.readLine())!=null){
+				try {
+					int index = Integer.parseInt(input) - 1;
+					if (index < 0 || a.length() <= index) {
+						throw new NumberFormatException();
+					}
+					o = a.getJSONObject(index);
+					break;
+				} catch (NumberFormatException e) {
+					System.out.println("Please enter a number between 1-" 
+								+ a.length() + ". You entered: \"" + input + "\".");
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return o;
 	}
 
 }
