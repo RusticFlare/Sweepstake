@@ -1,8 +1,6 @@
 package sweepstake.methods;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -13,6 +11,7 @@ import org.json.JSONObject;
 
 import sweepstake.api.FootballDataHelper;
 import sweepstake.json.JsonReader;
+import sweepstake.stdin.StdInHelper;
 
 public class Sweepstake {
 
@@ -21,7 +20,7 @@ public class Sweepstake {
 		for (int i = 0; i < seasonsList.length(); i++) {
 			System.out.println("(" + (i+1) + ") " + seasonsList.getJSONObject(i).getString("caption"));
 		}
-		JSONObject season = JsonReader.getJSONObjectFromJSONArrayFromInput(seasonsList);
+		JSONObject season = StdInHelper.getJSONObjectFromJSONArrayFromInput(seasonsList);
 		JSONObject links = season.getJSONObject("_links");
 		JSONObject fixturesLink = links.getJSONObject("fixtures");
 		String fixturesUrl = fixturesLink.getString("href") + FootballDataHelper.TIME_FRAME_URL_FILTER;
@@ -31,7 +30,7 @@ public class Sweepstake {
 			JSONObject fixture = fixturesList.getJSONObject(i);
 			System.out.println("(" + (i+1) + ") " + fixture.getString("homeTeamName") + " v " + fixture.getString("awayTeamName"));
 		}
-		JSONObject fixture = JsonReader.getJSONObjectFromJSONArrayFromInput(fixturesList);
+		JSONObject fixture = StdInHelper.getJSONObjectFromJSONArrayFromInput(fixturesList);
 		links = fixture.getJSONObject("_links");
 		String homePlayersUrl = links.getJSONObject("homeTeam").getString("href") + FootballDataHelper.PLAYERS_URL;
 		String awayPlayersUrl = links.getJSONObject("awayTeam").getString("href") + FootballDataHelper.PLAYERS_URL;
@@ -45,7 +44,7 @@ public class Sweepstake {
 			int j = i + homePlayers.length();
 			players[j] = awayPlayers.getJSONObject(i).getString("name");
 		}
-		String[] punters = { "James", "Ed", "Frank" };
+		String[] punters = StdInHelper.readInputsToStringArray();
 		Map<String, String[]> results = sweepstake(players,punters);
 		for(Map.Entry<String, String[]> result : results.entrySet()) {
 			System.out.println(result.getKey() + ": ");
@@ -57,6 +56,12 @@ public class Sweepstake {
 	}
 	
 	public static Map<String,String[]> sweepstake(String[] players, String[] punters) {
+		if (players == null || players.length == 0) {
+			throw new IllegalArgumentException();
+		}
+		if (punters == null || punters.length == 0) {
+			throw new IllegalArgumentException();
+		}
 		String[][] playerSplit = new String[punters.length][];
 		int sizeOfSplit = players.length / punters.length;
 		int remainder = players.length % punters.length;
