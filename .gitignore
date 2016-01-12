@@ -48,3 +48,5 @@ Temporary Items
 
 # Java class files
 *.class
+.idea/
+Sweepstake.iml
